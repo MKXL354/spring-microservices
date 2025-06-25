@@ -1,12 +1,15 @@
 package org.example.core.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.core.exception.LicenseAlreadyExistException;
 import org.example.core.exception.LicenseDoesNotExistException;
 import org.example.core.model.License;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.Locale;
 
 /**
  * @author Mehdi Kamali
@@ -14,9 +17,12 @@ import java.util.HashMap;
  */
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class LicenseService {
 
     private HashMap<Long, License> licenseMap = new HashMap<>();
+
+    private final MessageSource messageSource;
 
     public License createLicense(License license) throws LicenseAlreadyExistException {
         if (licenseMap.containsKey(license.getLicenseId()))
@@ -29,6 +35,9 @@ public class LicenseService {
     public License getLicense(Long licenseId) throws LicenseDoesNotExistException {
         if (!licenseMap.containsKey(licenseId))
             throw new LicenseDoesNotExistException(String.format("license %d does not exist", licenseId));
+//        TODO: abstract or remove this away later. Leave for demonstration for now.
+        String licenseCreated = messageSource.getMessage("license.create.success", new Object[]{licenseId}, Locale.US);
+        log.info(licenseCreated);
         return licenseMap.get(licenseId);
     }
 
