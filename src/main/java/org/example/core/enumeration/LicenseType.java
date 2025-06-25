@@ -1,4 +1,4 @@
-package org.example.core.model.enumeration;
+package org.example.core.enumeration;
 
 /**
  * @author Mehdi Kamali

@@ -1,6 +1,9 @@
 package org.example.api.facade;
 
+import org.example.core.exception.LicenseAlreadyExistException;
+import org.example.core.exception.LicenseDoesNotExistException;
 import org.example.core.model.License;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -9,18 +12,18 @@ import org.springframework.web.bind.annotation.*;
  */
 public interface LicenseFacade {
 
-    String BASE_PATH = "v1/organization/{organizationId}/license";
+    String BASE_PATH = "api/v1/organization/{organizationId}/license";
     String LICENSE = "/{licenseId}";
 
-    @PostMapping()
-    License createLicense(@RequestBody License license);
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    License createLicense(@RequestBody License license) throws LicenseAlreadyExistException;
 
-    @GetMapping(LICENSE)
-    License getLicense(@PathVariable Long licenseId);
+    @GetMapping( path = LICENSE, produces = MediaType.APPLICATION_JSON_VALUE)
+    License getLicense(@PathVariable Long licenseId) throws LicenseDoesNotExistException;
 
-    @DeleteMapping(LICENSE)
-    void deleteLicense(@PathVariable Long licenseId);
+    @DeleteMapping(path = LICENSE)
+    void deleteLicense(@PathVariable Long licenseId) throws LicenseDoesNotExistException;
 
-    @PatchMapping(LICENSE)
-    void updateLicense(@RequestBody License license);
+    @PatchMapping(path = LICENSE, produces = MediaType.APPLICATION_JSON_VALUE)
+    void updateLicense(@RequestBody License license) throws LicenseDoesNotExistException;
 }

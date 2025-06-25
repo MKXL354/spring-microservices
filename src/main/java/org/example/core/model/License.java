@@ -1,7 +1,7 @@
 package org.example.core.model;
 
 import lombok.Data;
-import org.example.core.model.enumeration.LicenseType;
+import org.example.core.enumeration.LicenseType;
 
 /**
  * @author Mehdi Kamali
