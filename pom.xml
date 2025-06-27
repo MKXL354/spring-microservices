@@ -3,9 +3,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.example</groupId>
-    <artifactId>spring-microservices</artifactId>
+    <artifactId>licensing-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>spring-microservices</name>
+    <name>licensing-service</name>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -18,6 +18,8 @@
         <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <springdoc.version>2.5.0</springdoc.version>
+        <docker.image.prefix>spring-microservice</docker.image.prefix>
+        <google.jib.version>3.4.5</google.jib.version>
     </properties>
 
     <dependencies>
@@ -61,6 +63,17 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>${google.jib.version}</version>
+                <configuration>
+                    <to>
+                        <image>${docker.image.prefix}/${project.artifactId}:${project.version}</image>
+                    </to>
+                </configuration>
             </plugin>
         </plugins>
     </build>
