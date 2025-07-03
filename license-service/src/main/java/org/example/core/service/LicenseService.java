@@ -2,13 +2,16 @@ package org.example.core.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.api.dto.CreateLicenseRequestDto;
+import org.example.api.dto.UpdateLicenseRequestDto;
 import org.example.core.exception.LicenseAlreadyExistException;
 import org.example.core.exception.LicenseDoesNotExistException;
 import org.example.core.model.License;
+import org.example.core.provider.LicenseProvider;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.Locale;
 
 /**
@@ -20,38 +23,42 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public class LicenseService {
 
-    private HashMap<Long, License> licenseMap = new HashMap<>();
-
     private final MessageSource messageSource;
+    private final LicenseProvider licenseProvider;
 
-    public License createLicense(License license) throws LicenseAlreadyExistException {
-        if (licenseMap.containsKey(license.getLicenseId()))
-            throw new LicenseAlreadyExistException(String.format("license %d already exists", license.getLicenseId()));
-        licenseMap.put(license.getLicenseId(), license);
+    public License createLicense(CreateLicenseRequestDto requestDto) throws LicenseAlreadyExistException {
+        License license = licenseProvider.findByOrganizationIdAndName(requestDto.getOrganizationId(), requestDto.getProductName());
+        if (license != null)
+            throw new LicenseAlreadyExistException(String.format("license %s for organization %d already exists", license.getProductName(), license.getOrganizationId()));
+        license = licenseProvider.save(requestDto);
         log.info("license {} created", license.getLicenseId());
         return license;
     }
 
     public License getLicense(Long licenseId) throws LicenseDoesNotExistException {
-        if (!licenseMap.containsKey(licenseId))
+        License license = licenseProvider.findByLicenseId(licenseId);
+        if (license == null)
             throw new LicenseDoesNotExistException(String.format("license %d does not exist", licenseId));
 //        TODO: abstract or remove this away later. Leave for demonstration for now.
-        String licenseCreated = messageSource.getMessage("license.create.success", new Object[]{licenseId}, Locale.US);
-        log.info(licenseCreated);
-        return licenseMap.get(licenseId);
+        String licenseRetrieved = messageSource.getMessage("license.get.success", new Object[]{licenseId}, Locale.US);
+        log.info(licenseRetrieved);
+        return license;
     }
 
-    public void updateLicense(License license) throws LicenseDoesNotExistException {
-        if (!licenseMap.containsKey(license.getLicenseId()))
-            throw new LicenseDoesNotExistException(String.format("license %d does not exist", license.getLicenseId()));
-        log.info("license {} updated", license.getLicenseId());
-        licenseMap.put(license.getLicenseId(), license);
+    @Transactional
+    public void updateLicense(UpdateLicenseRequestDto requestDto) throws LicenseDoesNotExistException {
+        License license = licenseProvider.findByLicenseId(requestDto.getLicenseId());
+        if (license == null)
+            throw new LicenseDoesNotExistException(String.format("license %d does not exist", requestDto.getLicenseId()));
+        log.info("license {} updated with values: {}", license.getLicenseId(), requestDto);
+        licenseProvider.save(requestDto);
     }
 
     public void deleteLicense(Long licenseId) throws LicenseDoesNotExistException {
-        if (!licenseMap.containsKey(licenseId))
+        License license = licenseProvider.findByLicenseId(licenseId);
+        if (license == null)
             throw new LicenseDoesNotExistException(String.format("license %d does not exist", licenseId));
         log.info("license {} removed", licenseId);
-        licenseMap.remove(licenseId);
+        licenseProvider.deleteById(licenseId);
     }
 }

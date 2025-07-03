@@ -1,6 +1,8 @@
 package org.example.api.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.example.api.dto.CreateLicenseRequestDto;
+import org.example.api.dto.UpdateLicenseRequestDto;
 import org.example.api.facade.LicenseFacade;
 import org.example.core.exception.LicenseAlreadyExistException;
 import org.example.core.exception.LicenseDoesNotExistException;
@@ -20,8 +22,8 @@ public class LicenseController implements LicenseFacade {
 
     private final LicenseService licenseService;
 
-    public License createLicense(License license) throws LicenseAlreadyExistException {
-        return licenseService.createLicense(license);
+    public License createLicense(CreateLicenseRequestDto requestDto) throws LicenseAlreadyExistException {
+        return licenseService.createLicense(requestDto);
     }
 
     public License getLicense(Long licenseId) throws LicenseDoesNotExistException {
@@ -32,7 +34,7 @@ public class LicenseController implements LicenseFacade {
         licenseService.deleteLicense(licenseId);
     }
 
-    public void updateLicense(License license) throws LicenseDoesNotExistException {
-        licenseService.updateLicense(license);
+    public void updateLicense(UpdateLicenseRequestDto requestDto) throws LicenseDoesNotExistException {
+        licenseService.updateLicense(requestDto);
     }
 }
