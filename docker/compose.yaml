@@ -1,0 +1,55 @@
+services:
+  database:
+    image: postgres:latest
+    container_name: postgres
+    networks:
+      - microservices_net
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: "spring-microservices"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+
+  config-server:
+    image: spring-microservice/config-server:1.0-SNAPSHOT
+    container_name: config-server
+    networks:
+      - microservices_net
+    ports:
+      - "8071:8071"
+    environment:
+      SPRING_PROFILES_ACTIVE: "vault"
+      SPRING.CLOUD.CONFIG.SERVER.VAULT.HOST: "vault-prod"
+      SPRING.CLOUD.CONFIG.SERVER.VAULT.PORT: "8200"
+      SPRING.CLOUD.CONFIG.SERVER.VAULT.TOKEN: ${VAULT_TOKEN}
+    command: >
+      java
+      -jar /app/config-server.jar
+
+  license-service:
+    image: spring-microservice/license-service:1.0-SNAPSHOT
+    container_name: license-service
+    ports:
+      - "8001:8080"
+    networks:
+      - microservices_net
+    environment:
+      SPRING_PROFILES_ACTIVE: "dev"
+      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8071"
+    depends_on:
+      database:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+
+networks:
+  microservices_net:
+    external: true

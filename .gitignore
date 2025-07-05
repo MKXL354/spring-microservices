@@ -1,5 +1,14 @@
-### Full pom.xml contaning all dependencies ###
-pom.xml.old
+### Private data ###
+TODO.txt
+docker/.env
+docker/postgres-data/
+
+### Vault secrets volumes (data dir) ###
+vault-setup/data/
+
+### Private TLS key and OS environemnt variables for prod ###
+vault-setup/vault/certs/*.key
+vault-setup/vault_keys.json
 
 ### Target ###
 target/

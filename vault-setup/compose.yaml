@@ -1,0 +1,22 @@
+services:
+  vault:
+    image: hashicorp/vault:latest
+    container_name: vault-prod
+    networks:
+      - microservices_net
+    ports:
+      - "8200:8200"
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - ./vault/config.hcl:/vault/config/config.hcl
+      - ./vault/certs:/vault/certs
+      - ./data:/vault/data
+    environment:
+      VAULT_LOCAL_CONFIG: |
+        {}
+    command: vault server -config=/vault/config/config.hcl
+
+networks:
+  microservices_net:
+    external: true
