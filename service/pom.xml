@@ -15,6 +15,7 @@
 
     <modules>
         <module>license-service</module>
+        <module>organization-service</module>
     </modules>
 
     <dependencies>

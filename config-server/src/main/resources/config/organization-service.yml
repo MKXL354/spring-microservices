@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    platform: postgres
+  jpa:
+    hibernate:
+      ddl-auto: none

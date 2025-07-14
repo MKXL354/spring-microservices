@@ -31,7 +31,7 @@ public class LicenseService {
         if (license != null)
             throw new LicenseAlreadyExistException(String.format("license %s for organization %d already exists", license.getProductName(), license.getOrganizationId()));
         license = licenseProvider.save(requestDto);
-        log.info("license {} created", license.getLicenseId());
+        log.info("license {} created", requestDto);
         return license;
     }
 
@@ -50,7 +50,7 @@ public class LicenseService {
         License license = licenseProvider.findByLicenseId(requestDto.getLicenseId());
         if (license == null)
             throw new LicenseDoesNotExistException(String.format("license %d does not exist", requestDto.getLicenseId()));
-        log.info("license {} updated with values: {}", license.getLicenseId(), requestDto);
+        log.info("license with id {} updated with values: {}", license.getLicenseId(), requestDto);
         licenseProvider.save(requestDto);
     }
 
@@ -58,7 +58,7 @@ public class LicenseService {
         License license = licenseProvider.findByLicenseId(licenseId);
         if (license == null)
             throw new LicenseDoesNotExistException(String.format("license %d does not exist", licenseId));
-        log.info("license {} removed", licenseId);
+        log.info("license with id {} deleted", licenseId);
         licenseProvider.deleteById(licenseId);
     }
 }
