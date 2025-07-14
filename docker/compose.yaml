@@ -26,13 +26,30 @@ services:
     ports:
       - "8071:8071"
     environment:
-      SPRING_PROFILES_ACTIVE: "vault"
-      SPRING.CLOUD.CONFIG.SERVER.VAULT.HOST: "vault-prod"
+      SPRING_PROFILES_ACTIVE: "native"
+      SPRING.CLOUD.CONFIG.SERVER.VAULT.HOST: "vault"
       SPRING.CLOUD.CONFIG.SERVER.VAULT.PORT: "8200"
       SPRING.CLOUD.CONFIG.SERVER.VAULT.TOKEN: ${VAULT_TOKEN}
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -sf http://localhost:8071/actuator/health | grep -q '\"status\":\"UP\"'" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     command: >
-      java
-      -jar /app/config-server.jar
+      java -jar /app/config-server.jar
+
+  service-discovery:
+    image: spring-microservice/service-discovery:1.0-SNAPSHOT
+    container_name: service-discovery
+    ports:
+      - "8761:8761"
+    networks:
+      - microservices_net
+    environment:
+      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8071"
+    depends_on:
+      config-server:
+        condition: service_healthy
 
   license-service:
     image: spring-microservice/license-service:1.0-SNAPSHOT
@@ -48,7 +65,7 @@ services:
       database:
         condition: service_healthy
       config-server:
-        condition: service_started
+        condition: service_healthy
 
 networks:
   microservices_net:

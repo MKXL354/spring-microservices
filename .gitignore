@@ -9,6 +9,7 @@ vault-setup/data/
 ### Private TLS key and OS environemnt variables for prod ###
 vault-setup/vault/certs/*.key
 vault-setup/vault_keys.json
+vault-setup/terminal-commands.txt
 
 ### Target ###
 target/

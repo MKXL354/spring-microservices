@@ -12,9 +12,9 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 @SpringBootApplication
 @EnableDiscoveryClient
 @RefreshScope
-public class LicenseApp {
+public class LicenseServiceApp {
 
     public static void main(String[] args) {
-        SpringApplication.run(LicenseApp.class, args);
+        SpringApplication.run(LicenseServiceApp.class, args);
     }
 }

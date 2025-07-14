@@ -1,7 +1,7 @@
 services:
   vault:
     image: hashicorp/vault:latest
-    container_name: vault-prod
+    container_name: vault
     networks:
       - microservices_net
     ports:
