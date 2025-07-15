@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import org.example.api.dto.CreateLicenseRequestDto;
 import org.example.api.dto.UpdateLicenseRequestDto;
 import org.example.core.exception.LicenseDoesNotExistException;
+import org.example.core.exception.OrganizationDoesNotExistException;
 import org.example.core.exception.OrganizationDoesNotHaveAccessToLicenseException;
 import org.example.core.model.License;
 import org.springframework.http.MediaType;
@@ -20,17 +21,17 @@ public interface LicenseFacade {
     String LICENSE = BASE_PATH + "/{licenseId}";
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    License createLicense(@NotNull @PathVariable Long organizationId, @Valid @RequestBody CreateLicenseRequestDto requestDto);
+    License createLicense(@NotNull @PathVariable Long organizationId, @Valid @RequestBody CreateLicenseRequestDto requestDto) throws OrganizationDoesNotExistException;
 
     @GetMapping(path = LICENSE, produces = MediaType.APPLICATION_JSON_VALUE)
     License getLicense(@NotNull @PathVariable Long organizationId, @NotNull @PathVariable Long licenseId) throws LicenseDoesNotExistException,
-            OrganizationDoesNotHaveAccessToLicenseException;
+            OrganizationDoesNotHaveAccessToLicenseException, OrganizationDoesNotExistException;
 
     @DeleteMapping(path = LICENSE)
     void deleteLicense(@NotNull @PathVariable Long organizationId, @NotNull @PathVariable Long licenseId) throws LicenseDoesNotExistException,
-            OrganizationDoesNotHaveAccessToLicenseException;
+            OrganizationDoesNotHaveAccessToLicenseException, OrganizationDoesNotExistException;
 
     @PatchMapping(path = LICENSE, consumes = MediaType.APPLICATION_JSON_VALUE)
     void updateLicense(@NotNull @PathVariable Long organizationId, @NotNull @PathVariable Long licenseId, @Valid @RequestBody UpdateLicenseRequestDto requestDto)
-            throws LicenseDoesNotExistException, OrganizationDoesNotHaveAccessToLicenseException;
+            throws LicenseDoesNotExistException, OrganizationDoesNotHaveAccessToLicenseException, OrganizationDoesNotExistException;
 }

@@ -1,4 +1,4 @@
-package org.example.externalApi;
+package org.example.externalApi.feign;
 
 import org.example.externalApi.config.OrganizationServiceClientConfig;
 import org.example.externalApi.dto.OrganizationDto;

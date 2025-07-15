@@ -1,4 +1,4 @@
-package org.example.repository;
+package org.example.repository.jpa;
 
 import org.example.repository.entity.LicenseEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

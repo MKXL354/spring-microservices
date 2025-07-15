@@ -2,6 +2,7 @@ package org.example.api.errorHandling;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.example.core.exception.LicenseDoesNotExistException;
+import org.example.core.exception.OrganizationDoesNotExistException;
 import org.example.core.exception.OrganizationDoesNotHaveAccessToLicenseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -39,6 +40,13 @@ public class GlobalRestErrorHandler {
     @ExceptionHandler(LicenseDoesNotExistException.class)
     public ErrorDetail handleLicenseDoesNotExistException(LicenseDoesNotExistException ex, HttpServletRequest request) {
         return new ErrorDetail(LocalDateTime.now(), HttpStatus.NOT_FOUND.value(), LicenseDoesNotExistException.class.getSimpleName(),
+                ex.getMessage(), request.getRequestURI());
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(OrganizationDoesNotExistException.class)
+    public ErrorDetail handleOrganizationDoesNotExistException(OrganizationDoesNotExistException ex, HttpServletRequest request) {
+        return new ErrorDetail(LocalDateTime.now(), HttpStatus.NOT_FOUND.value(), OrganizationDoesNotExistException.class.getSimpleName(),
                 ex.getMessage(), request.getRequestURI());
     }
 

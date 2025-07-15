@@ -1,7 +1,10 @@
 package org.example.externalApi.assembler;
 
+import org.example.core.exception.OrganizationDoesNotExistException;
 import org.example.core.model.Organization;
 import org.example.externalApi.dto.OrganizationDto;
+import org.example.externalApi.errorHandling.exception.BaseOrganizationServiceException;
+import org.example.externalApi.errorHandling.exception.ServiceOrganizationDoesNotExistException;
 import org.springframework.stereotype.Component;
 
 /**
@@ -17,5 +20,13 @@ public class OrganizationServiceAssembler {
         organization.setName(organizationDto.getName());
         organization.setDescription(organizationDto.getDescription());
         return organization;
+    }
+
+    public void generateOrganizationServiceException(BaseOrganizationServiceException exception) throws OrganizationDoesNotExistException {
+        if (exception instanceof ServiceOrganizationDoesNotExistException e) {
+            throw new OrganizationDoesNotExistException(e.getMessage());
+        } else {
+            throw exception;
+        }
     }
 }

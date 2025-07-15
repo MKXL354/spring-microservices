@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.api.dto.CreateLicenseRequestDto;
 import org.example.api.dto.UpdateLicenseRequestDto;
 import org.example.core.exception.LicenseDoesNotExistException;
+import org.example.core.exception.OrganizationDoesNotExistException;
 import org.example.core.exception.OrganizationDoesNotHaveAccessToLicenseException;
 import org.example.core.invoker.OrganizationServiceInvoker;
 import org.example.core.model.License;
@@ -29,7 +30,7 @@ public class LicenseService {
     private final LicenseProvider licenseProvider;
     private final OrganizationServiceInvoker organizationServiceInvoker;
 
-    public License createLicense(Long organizationId, CreateLicenseRequestDto requestDto) {
+    public License createLicense(Long organizationId, CreateLicenseRequestDto requestDto) throws OrganizationDoesNotExistException {
         Organization organization = organizationServiceInvoker.getOrganization(organizationId);
 //        TODO: org not found in invoker
         License license = licenseProvider.save(requestDto, organization);
@@ -38,7 +39,7 @@ public class LicenseService {
     }
 
     public License getLicense(Long organizationId, Long licenseId) throws LicenseDoesNotExistException,
-            OrganizationDoesNotHaveAccessToLicenseException {
+            OrganizationDoesNotHaveAccessToLicenseException, OrganizationDoesNotExistException {
         License license = licenseProvider.findByLicenseId(licenseId);
         Organization organization = organizationServiceInvoker.getOrganization(organizationId);
         checkOrganizationAccessToLicense(license, organization);
@@ -50,7 +51,7 @@ public class LicenseService {
 
     @Transactional
     public void updateLicense(Long organizationId, Long licenseId, UpdateLicenseRequestDto requestDto) throws LicenseDoesNotExistException,
-            OrganizationDoesNotHaveAccessToLicenseException {
+            OrganizationDoesNotHaveAccessToLicenseException, OrganizationDoesNotExistException {
         License license = licenseProvider.findByLicenseId(licenseId);
         Organization organization = organizationServiceInvoker.getOrganization(organizationId);
         checkOrganizationAccessToLicense(license, organization);
@@ -59,7 +60,7 @@ public class LicenseService {
     }
 
     public void deleteLicense(Long organizationId, Long licenseId) throws LicenseDoesNotExistException,
-            OrganizationDoesNotHaveAccessToLicenseException {
+            OrganizationDoesNotHaveAccessToLicenseException, OrganizationDoesNotExistException {
         License license = licenseProvider.findByLicenseId(licenseId);
         Organization organization = organizationServiceInvoker.getOrganization(organizationId);
         checkOrganizationAccessToLicense(license, organization);

@@ -7,9 +7,9 @@ import org.example.core.exception.LicenseDoesNotExistException;
 import org.example.core.model.License;
 import org.example.core.model.Organization;
 import org.example.core.provider.LicenseProvider;
-import org.example.repository.LicenseJpaRepository;
 import org.example.repository.assembler.LicenseAssembler;
 import org.example.repository.entity.LicenseEntity;
+import org.example.repository.jpa.LicenseJpaRepository;
 import org.springframework.stereotype.Component;
 
 /**

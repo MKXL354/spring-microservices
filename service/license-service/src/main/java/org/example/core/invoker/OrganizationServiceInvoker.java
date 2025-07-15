@@ -1,5 +1,6 @@
 package org.example.core.invoker;
 
+import org.example.core.exception.OrganizationDoesNotExistException;
 import org.example.core.model.Organization;
 
 /**
@@ -8,5 +9,5 @@ import org.example.core.model.Organization;
  */
 public interface OrganizationServiceInvoker {
 
-    Organization getOrganization(Long organizationId);
+    Organization getOrganization(Long organizationId) throws OrganizationDoesNotExistException;
 }

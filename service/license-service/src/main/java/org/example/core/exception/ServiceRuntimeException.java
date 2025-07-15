@@ -1,4 +1,4 @@
-package org.example.core.exception.base;
+package org.example.core.exception;
 
 /**
  * @author Mehdi Kamali

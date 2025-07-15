@@ -20,6 +20,22 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalRestErrorHandler {
 
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(Exception.class)
+    public ErrorDetail handleException(Exception ex, HttpServletRequest request) {
+        return new ErrorDetail(LocalDateTime.now(), HttpStatus.INTERNAL_SERVER_ERROR.value(), Exception.class.getSimpleName(),
+                "Internal Server Error", request.getRequestURI());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ErrorDetail handleMethodArgumentNotValidException(MethodArgumentNotValidException ex, HttpServletRequest request) {
+        String message = ex.getBindingResult().getFieldErrors().stream().map(err -> err.getField() + ": " + err.getDefaultMessage())
+                .collect(Collectors.joining("\n"));
+        return new ErrorDetail(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(), MethodArgumentNotValidException.class.getSimpleName(),
+                message, request.getRequestURI());
+    }
+
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(OrganizationDoesNotExistException.class)
     public ErrorDetail handleOrganizationDoesNotExistException(OrganizationDoesNotExistException ex, HttpServletRequest request) {
@@ -32,14 +48,5 @@ public class GlobalRestErrorHandler {
     public ErrorDetail handleOrganizationAlreadyExistException(OrganizationAlreadyExistException ex, HttpServletRequest request) {
         return new ErrorDetail(LocalDateTime.now(), HttpStatus.CONFLICT.value(), OrganizationAlreadyExistException.class.getSimpleName(),
                 ex.getMessage(), request.getRequestURI());
-    }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ErrorDetail handleMethodArgumentNotValidException(MethodArgumentNotValidException ex, HttpServletRequest request) {
-        String message = ex.getBindingResult().getFieldErrors().stream().map(err -> err.getField() + ": " + err.getDefaultMessage())
-                .collect(Collectors.joining("\n"));
-        return new ErrorDetail(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(), MethodArgumentNotValidException.class.getSimpleName(),
-                message, request.getRequestURI());
     }
 }
