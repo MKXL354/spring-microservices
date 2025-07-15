@@ -60,12 +60,14 @@ services:
     image: spring-microservice/license-service:1.0-SNAPSHOT
     container_name: license-service
     ports:
-      - "8001:8080"
+      - "8001:8001"
     networks:
       - microservices_net
     environment:
       SPRING_PROFILES_ACTIVE: "dev"
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8071"
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: "http://service-discovery:8761/eureka/"
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://database:5432/spring-microservices"
     depends_on:
       database:
         condition: service_healthy
@@ -78,12 +80,14 @@ services:
     image: spring-microservice/organization-service:1.0-SNAPSHOT
     container_name: organization-service
     ports:
-      - "8002:8080"
+      - "8002:8002"
     networks:
       - microservices_net
     environment:
       SPRING_PROFILES_ACTIVE: "dev"
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8071"
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: "http://service-discovery:8761/eureka/"
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://database:5432/spring-microservices"
     depends_on:
       database:
         condition: service_healthy
