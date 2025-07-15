@@ -1,6 +1,5 @@
-package org.example.api.errorHandling;
+package org.example.externalApi.errorHandling.errorDto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,8 +11,7 @@ import java.time.LocalDateTime;
  */
 @Getter
 @Setter
-@AllArgsConstructor
-public class ErrorDetail {
+public class OrganizationServiceErrorDto {
 
     private LocalDateTime timestamp;
     private int status;

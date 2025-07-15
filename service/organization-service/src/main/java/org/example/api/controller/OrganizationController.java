@@ -45,10 +45,10 @@ public class OrganizationController {
         organizationJpaRepository.save(organization);
     }
 
-    @GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Organization getOrganization(@PathVariable Long id) throws OrganizationDoesNotExistException {
-        return organizationJpaRepository.findById(id).orElseThrow(() -> new OrganizationDoesNotExistException(
-            String.format("organization %d does not exist", id)));
+    @GetMapping(path = "{organizationId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Organization getOrganization(@PathVariable Long organizationId) throws OrganizationDoesNotExistException {
+        return organizationJpaRepository.findById(organizationId).orElseThrow(() -> new OrganizationDoesNotExistException(
+                String.format("organization %d does not exist", organizationId)));
     }
 
     @DeleteMapping(path = "{organizationId}")

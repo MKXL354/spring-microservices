@@ -1,8 +1,8 @@
 package org.example.api.errorHandling;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.example.core.exception.LicenseAlreadyExistException;
 import org.example.core.exception.LicenseDoesNotExistException;
+import org.example.core.exception.OrganizationDoesNotHaveAccessToLicenseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,18 +19,11 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalRestErrorHandler {
 
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(LicenseDoesNotExistException.class)
-    public ErrorDetail handleLicenseDoesNotExistException(LicenseDoesNotExistException ex, HttpServletRequest request) {
-        return new ErrorDetail(LocalDateTime.now(), HttpStatus.NOT_FOUND.value(), LicenseDoesNotExistException.class.getSimpleName(),
-                ex.getMessage(), request.getRequestURI());
-    }
-
-    @ResponseStatus(HttpStatus.CONFLICT)
-    @ExceptionHandler(LicenseAlreadyExistException.class)
-    public ErrorDetail handleLicenseAlreadyExistException(LicenseAlreadyExistException ex, HttpServletRequest request) {
-        return new ErrorDetail(LocalDateTime.now(), HttpStatus.CONFLICT.value(), LicenseAlreadyExistException.class.getSimpleName(),
-                ex.getMessage(), request.getRequestURI());
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(Exception.class)
+    public ErrorDetail handleException(Exception ex, HttpServletRequest request) {
+        return new ErrorDetail(LocalDateTime.now(), HttpStatus.INTERNAL_SERVER_ERROR.value(), Exception.class.getSimpleName(),
+                "Internal Server Error", request.getRequestURI());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -40,5 +33,19 @@ public class GlobalRestErrorHandler {
                 .collect(Collectors.joining("\n"));
         return new ErrorDetail(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(), MethodArgumentNotValidException.class.getSimpleName(),
                 message, request.getRequestURI());
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(LicenseDoesNotExistException.class)
+    public ErrorDetail handleLicenseDoesNotExistException(LicenseDoesNotExistException ex, HttpServletRequest request) {
+        return new ErrorDetail(LocalDateTime.now(), HttpStatus.NOT_FOUND.value(), LicenseDoesNotExistException.class.getSimpleName(),
+                ex.getMessage(), request.getRequestURI());
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(OrganizationDoesNotHaveAccessToLicenseException.class)
+    public ErrorDetail handleOrganizationDoesNotHaveAccessToLicenseException(OrganizationDoesNotHaveAccessToLicenseException ex, HttpServletRequest request) {
+        return new ErrorDetail(LocalDateTime.now(), HttpStatus.UNAUTHORIZED.value(), OrganizationDoesNotHaveAccessToLicenseException.class.getSimpleName(),
+                ex.getMessage(), request.getRequestURI());
     }
 }

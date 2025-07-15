@@ -17,11 +17,8 @@ public class CreateLicenseRequestDto {
     @Size(max = 500)
     private String description;
 
-    @NotNull
-    private Long organizationId;
-
     @Size(max = 100)
-    private String productName;
+    private String name;
 
     @NotNull
     private LicenseType licenseType;

@@ -4,3 +4,12 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
+
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://service-discovery:8761/eureka/

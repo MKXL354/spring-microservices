@@ -3,6 +3,8 @@ package org.example.repository.assembler;
 import org.example.api.dto.CreateLicenseRequestDto;
 import org.example.core.enumeration.LicenseType;
 import org.example.core.model.License;
+import org.example.core.model.Organization;
+import org.example.repository.entity.LicenseEntity;
 import org.springframework.stereotype.Component;
 
 /**
@@ -12,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class LicenseAssembler {
 
-    public License toLicense(org.example.repository.entity.License licenseEntity) {
+    public License toLicense(LicenseEntity licenseEntity) {
         if (licenseEntity == null) {
             return null;
         }
@@ -25,11 +27,11 @@ public class LicenseAssembler {
         return license;
     }
 
-    public org.example.repository.entity.License toLicenseEntity(License license) {
+    public LicenseEntity toLicenseEntity(License license) {
         if (license == null) {
             return null;
         }
-        org.example.repository.entity.License licenseEntity = new org.example.repository.entity.License();
+        LicenseEntity licenseEntity = new LicenseEntity();
         licenseEntity.setId(license.getLicenseId());
         licenseEntity.setDescription(license.getDescription());
         licenseEntity.setOrganizationId(license.getOrganizationId());
@@ -38,11 +40,11 @@ public class LicenseAssembler {
         return licenseEntity;
     }
 
-    public org.example.repository.entity.License generateLicenseEntity(CreateLicenseRequestDto requestDto) {
-        org.example.repository.entity.License licenseEntity = new org.example.repository.entity.License();
+    public LicenseEntity generateLicenseEntity(CreateLicenseRequestDto requestDto, Organization organization) {
+        LicenseEntity licenseEntity = new LicenseEntity();
         licenseEntity.setDescription(requestDto.getDescription());
-        licenseEntity.setOrganizationId(requestDto.getOrganizationId());
-        licenseEntity.setName(requestDto.getProductName());
+        licenseEntity.setOrganizationId(organization.getOrganizationId());
+        licenseEntity.setName(requestDto.getName());
         licenseEntity.setLicenseType(toPersistenceLicenseType(requestDto.getLicenseType()));
         return licenseEntity;
     }

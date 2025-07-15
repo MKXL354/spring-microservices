@@ -4,10 +4,10 @@ import org.example.core.exception.base.ServiceException;
 
 /**
  * @author Mehdi Kamali
- * @since 25/06/2025
+ * @since 15/07/2025
  */
-public class LicenseAlreadyExistException extends ServiceException {
-    public LicenseAlreadyExistException(String message) {
+public class OrganizationDoesNotExistException extends ServiceException {
+    public OrganizationDoesNotExistException(String message) {
         super(message);
     }
 }

@@ -13,7 +13,7 @@ import org.example.repository.enumeration.LicenseType;
 @Table(name = "LICENSE")
 @Getter
 @Setter
-public class License {
+public class LicenseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

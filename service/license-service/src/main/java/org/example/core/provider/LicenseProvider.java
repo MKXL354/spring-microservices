@@ -2,7 +2,9 @@ package org.example.core.provider;
 
 import org.example.api.dto.CreateLicenseRequestDto;
 import org.example.api.dto.UpdateLicenseRequestDto;
+import org.example.core.exception.LicenseDoesNotExistException;
 import org.example.core.model.License;
+import org.example.core.model.Organization;
 
 /**
  * @author Mehdi Kamali
@@ -10,13 +12,13 @@ import org.example.core.model.License;
  */
 public interface LicenseProvider {
 
-    License findByLicenseId(Long licenseId);
+    License findByLicenseId(Long licenseId) throws LicenseDoesNotExistException;
 
     void deleteById(Long licenseId);
 
     License findByOrganizationIdAndName(Long organizationId, String name);
 
-    License save(CreateLicenseRequestDto requestDto);
+    License save(CreateLicenseRequestDto requestDto, Organization organization);
 
-    void save(UpdateLicenseRequestDto requestDto);
+    void save(Long licenseId, UpdateLicenseRequestDto requestDto);
 }

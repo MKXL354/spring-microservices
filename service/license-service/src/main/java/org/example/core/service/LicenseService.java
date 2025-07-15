@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.api.dto.CreateLicenseRequestDto;
 import org.example.api.dto.UpdateLicenseRequestDto;
-import org.example.core.exception.LicenseAlreadyExistException;
 import org.example.core.exception.LicenseDoesNotExistException;
+import org.example.core.exception.OrganizationDoesNotHaveAccessToLicenseException;
+import org.example.core.invoker.OrganizationServiceInvoker;
 import org.example.core.model.License;
+import org.example.core.model.Organization;
 import org.example.core.provider.LicenseProvider;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
@@ -25,20 +27,21 @@ public class LicenseService {
 
     private final MessageSource messageSource;
     private final LicenseProvider licenseProvider;
+    private final OrganizationServiceInvoker organizationServiceInvoker;
 
-    public License createLicense(CreateLicenseRequestDto requestDto) throws LicenseAlreadyExistException {
-        License license = licenseProvider.findByOrganizationIdAndName(requestDto.getOrganizationId(), requestDto.getProductName());
-        if (license != null)
-            throw new LicenseAlreadyExistException(String.format("license %s for organization %d already exists", license.getProductName(), license.getOrganizationId()));
-        license = licenseProvider.save(requestDto);
+    public License createLicense(Long organizationId, CreateLicenseRequestDto requestDto) {
+        Organization organization = organizationServiceInvoker.getOrganization(organizationId);
+//        TODO: org not found in invoker
+        License license = licenseProvider.save(requestDto, organization);
         log.info("license {} created", requestDto);
         return license;
     }
 
-    public License getLicense(Long licenseId) throws LicenseDoesNotExistException {
+    public License getLicense(Long organizationId, Long licenseId) throws LicenseDoesNotExistException,
+            OrganizationDoesNotHaveAccessToLicenseException {
         License license = licenseProvider.findByLicenseId(licenseId);
-        if (license == null)
-            throw new LicenseDoesNotExistException(String.format("license %d does not exist", licenseId));
+        Organization organization = organizationServiceInvoker.getOrganization(organizationId);
+        checkOrganizationAccessToLicense(license, organization);
 //        TODO: abstract or remove this away later. Leave for demonstration for now.
         String licenseRetrieved = messageSource.getMessage("license.get.success", new Object[]{licenseId}, Locale.US);
         log.info(licenseRetrieved);
@@ -46,19 +49,28 @@ public class LicenseService {
     }
 
     @Transactional
-    public void updateLicense(UpdateLicenseRequestDto requestDto) throws LicenseDoesNotExistException {
-        License license = licenseProvider.findByLicenseId(requestDto.getLicenseId());
-        if (license == null)
-            throw new LicenseDoesNotExistException(String.format("license %d does not exist", requestDto.getLicenseId()));
+    public void updateLicense(Long organizationId, Long licenseId, UpdateLicenseRequestDto requestDto) throws LicenseDoesNotExistException,
+            OrganizationDoesNotHaveAccessToLicenseException {
+        License license = licenseProvider.findByLicenseId(licenseId);
+        Organization organization = organizationServiceInvoker.getOrganization(organizationId);
+        checkOrganizationAccessToLicense(license, organization);
+        licenseProvider.save(licenseId, requestDto);
         log.info("license with id {} updated with values: {}", license.getLicenseId(), requestDto);
-        licenseProvider.save(requestDto);
     }
 
-    public void deleteLicense(Long licenseId) throws LicenseDoesNotExistException {
+    public void deleteLicense(Long organizationId, Long licenseId) throws LicenseDoesNotExistException,
+            OrganizationDoesNotHaveAccessToLicenseException {
         License license = licenseProvider.findByLicenseId(licenseId);
-        if (license == null)
-            throw new LicenseDoesNotExistException(String.format("license %d does not exist", licenseId));
-        log.info("license with id {} deleted", licenseId);
+        Organization organization = organizationServiceInvoker.getOrganization(organizationId);
+        checkOrganizationAccessToLicense(license, organization);
         licenseProvider.deleteById(licenseId);
+        log.info("license with id {} deleted", licenseId);
+    }
+
+    private void checkOrganizationAccessToLicense(License license, Organization organization) throws OrganizationDoesNotHaveAccessToLicenseException {
+        if (!license.getOrganizationId().equals(organization.getOrganizationId())) {
+            throw new OrganizationDoesNotHaveAccessToLicenseException(String.format(
+                    "Organization with id %d does not have access to License with id %d", organization.getOrganizationId(), license.getLicenseId()));
+        }
     }
 }

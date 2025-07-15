@@ -3,10 +3,13 @@ package org.example.repository.providerImpl;
 import lombok.RequiredArgsConstructor;
 import org.example.api.dto.CreateLicenseRequestDto;
 import org.example.api.dto.UpdateLicenseRequestDto;
+import org.example.core.exception.LicenseDoesNotExistException;
 import org.example.core.model.License;
+import org.example.core.model.Organization;
 import org.example.core.provider.LicenseProvider;
 import org.example.repository.LicenseJpaRepository;
 import org.example.repository.assembler.LicenseAssembler;
+import org.example.repository.entity.LicenseEntity;
 import org.springframework.stereotype.Component;
 
 /**
@@ -21,9 +24,10 @@ public class LicenseProviderImpl implements LicenseProvider {
     private final LicenseAssembler licenseAssembler;
 
     @Override
-    public License findByLicenseId(Long licenseId) {
-        org.example.repository.entity.License license = licenseJpaRepository.findById(licenseId).orElse(null);
-        return licenseAssembler.toLicense(license);
+    public License findByLicenseId(Long licenseId) throws LicenseDoesNotExistException {
+        LicenseEntity licenseEntity = licenseJpaRepository.findById(licenseId).orElseThrow(() ->
+                new LicenseDoesNotExistException(String.format("license %d does not exist", licenseId)));
+        return licenseAssembler.toLicense(licenseEntity);
     }
 
     @Override
@@ -33,24 +37,24 @@ public class LicenseProviderImpl implements LicenseProvider {
 
     @Override
     public License findByOrganizationIdAndName(Long organizationId, String name) {
-        org.example.repository.entity.License license = licenseJpaRepository.findByOrganizationIdAndName(organizationId, name);
-        return licenseAssembler.toLicense(license);
+        LicenseEntity licenseEntity = licenseJpaRepository.findByOrganizationIdAndName(organizationId, name);
+        return licenseAssembler.toLicense(licenseEntity);
     }
 
     @Override
-    public License save(CreateLicenseRequestDto requestDto) {
-        org.example.repository.entity.License license = licenseAssembler.generateLicenseEntity(requestDto);
-        return licenseAssembler.toLicense(licenseJpaRepository.save(license));
+    public License save(CreateLicenseRequestDto requestDto, Organization organization) {
+        LicenseEntity licenseEntity = licenseAssembler.generateLicenseEntity(requestDto, organization);
+        return licenseAssembler.toLicense(licenseJpaRepository.save(licenseEntity));
     }
 
     @Override
-    public void save(UpdateLicenseRequestDto requestDto) {
-        org.example.repository.entity.License license = licenseJpaRepository.findById(requestDto.getLicenseId()).orElse(null);
-        if (license == null) {
+    public void save(Long licenseId, UpdateLicenseRequestDto requestDto) {
+        LicenseEntity licenseEntity = licenseJpaRepository.findById(licenseId).orElse(null);
+        if (licenseEntity == null) {
             return;
         }
-        license.setName(requestDto.getProductName());
-        license.setDescription(requestDto.getDescription());
-        licenseJpaRepository.save(license);
+        licenseEntity.setName(requestDto.getProductName());
+        licenseEntity.setDescription(requestDto.getDescription());
+        licenseJpaRepository.save(licenseEntity);
     }
 }

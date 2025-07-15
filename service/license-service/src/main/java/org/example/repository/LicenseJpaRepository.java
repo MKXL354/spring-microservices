@@ -1,6 +1,6 @@
 package org.example.repository;
 
-import org.example.repository.entity.License;
+import org.example.repository.entity.LicenseEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
  * @since 03/07/2025
  */
 @Repository
-public interface LicenseJpaRepository extends JpaRepository<License,Long> {
+public interface LicenseJpaRepository extends JpaRepository<LicenseEntity, Long> {
 
-    License findByOrganizationIdAndName(Long organizationId, String name);
+    LicenseEntity findByOrganizationIdAndName(Long organizationId, String name);
 }
